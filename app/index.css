@@ -1,0 +1,36 @@
+/* Estilos específicos para web (Windows 8.1 style) */
+
+/* Hover effect para tiles no desktop */
+@media (min-width: 1024px) {
+  /* Seletor para tiles com hover */
+  [data-tile="true"] {
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+  }
+
+  [data-tile="true"]:hover {
+    transform: scale(1.05);
+    background-color: #0086F0 !important;
+  }
+
+  [data-tile="true"]:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Scrollbar personalizada para Windows 8.1 style */
+@media (min-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    background-color: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #0078D4;
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #0086F0;
+  }
+}
