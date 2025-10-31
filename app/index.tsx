@@ -8,6 +8,7 @@ import { ThemedText } from '../components/themed-text';
 import { ThemedView } from '../components/themed-view';
 import { METRO_COLORS, METRO_FONT_FAMILY, METRO_SPACING } from '../constants/metro-styles';
 import { WORKOUT_CONFIG } from '../constants/workouts';
+import { useAuth } from '../contexts/auth-context';
 import { useTheme } from '../contexts/theme-context';
 
 // Import CSS para web (hover effects)
@@ -34,9 +35,17 @@ const WORKOUTS = [
 
 export default function Index() {
   const { width } = useWindowDimensions();
+  const { user, isLoading: authLoading } = useAuth();
   const { accentColor, colors, isLoading } = useTheme();
   const [isDesktop, setIsDesktop] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+
+  // Redireciona para login se não estiver autenticado
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login' as any);
+    }
+  }, [user, authLoading]);
 
   useEffect(() => {
     const checkLayout = () => {
@@ -115,8 +124,13 @@ export default function Index() {
   };
 
   // Aguarda o carregamento do tema antes de renderizar
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return null; // Ou um loading spinner se preferir
+  }
+
+  // Se não tiver usuário, não renderiza (vai redirecionar)
+  if (!user) {
+    return null;
   }
 
   return (
