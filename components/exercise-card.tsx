@@ -1,220 +1,235 @@
-import React, { memo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '../contexts/theme-context';
-import type { Exercise } from '../types/exercise';
+﻿'use client';
+
+import { MetroButton, MetroInput } from '@/components/metro-ui';
+import { ThemeColors } from '@/constants/metro-design-system';
+import { useTheme } from '@/contexts/theme-context';
+import { Exercise } from '@/types/exercise';
+import { useEffect, useState } from 'react';
 
 interface ExerciseCardProps {
   exercise: Exercise;
-  isComplete: boolean;
-  onToggleSet: (setIndex: number) => void;
-  onVideoPress: () => void;
-  completedSets: boolean[];
+  studentId?: string; // ID do aluno logado (opcional para compatibilidade)
 }
 
-const ExerciseCard = ({ 
-  exercise, 
-  isComplete, 
-  onToggleSet, 
-  onVideoPress,
-  completedSets
-}: ExerciseCardProps) => {
-  const { accentColor, colors } = useTheme();
-  const hasVideo = Boolean(exercise.video && exercise.video.trim());
+export function ExerciseCard({ exercise, studentId }: ExerciseCardProps) {
+  const { accentColor, colorScheme } = useTheme();
+  const [completedSets, setCompletedSets] = useState<boolean[]>(Array(exercise.sets).fill(false));
+  const [weight, setWeight] = useState<string>('');
+  const [lastWeight, setLastWeight] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
-  console.log(`🏃 [ExerciseCard] Renderizando: ${exercise.title}, completo: ${isComplete}, tem vídeo: ${hasVideo}`);
+  const themeColors = ThemeColors[colorScheme];
+
+  // Carregar último peso usado
+  useEffect(() => {
+    if (!studentId) return;
+
+    async function loadLastWeight() {
+      try {
+        const response = await fetch(
+          `/api/exercise-weights/get?student_id=${studentId}&exercise_id=${exercise.id}`
+        );
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          setLastWeight(result.data.weight);
+          setWeight(result.data.weight.toString());
+        }
+      } catch (error) {
+        console.error('Erro ao carregar peso:', error);
+      }
+    }
+
+    loadLastWeight();
+  }, [studentId, exercise.id]);
+
+  const toggleSet = (index: number) => {
+    const newSets = [...completedSets];
+    newSets[index] = !newSets[index];
+    setCompletedSets(newSets);
+  };
+
+  const handleSaveWeight = async () => {
+    if (!studentId || !weight || parseFloat(weight) <= 0) return;
+
+    setSaving(true);
+    try {
+      const response = await fetch('/api/exercise-weights/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student_id: studentId,
+          exercise_id: exercise.id,
+          weight: parseFloat(weight),
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setLastWeight(parseFloat(weight));
+      } else {
+        alert('Erro ao salvar peso');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar peso:', error);
+      alert('Erro ao salvar peso');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const completedCount = completedSets.filter(Boolean).length;
+  const isComplete = completedCount === exercise.sets;
+
+  // Extrair ID do vídeo do YouTube
+  const getYouTubeId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/shorts\/([^&\n?#]+)/,
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  };
+
+  const videoId = exercise.video ? getYouTubeId(exercise.video) : null;
 
   return (
-    <View 
-      style={[
-        styles.exerciseCard,
-        { backgroundColor: colors.cardBackground },
-        isComplete && styles.exerciseCardCompleted
-      ]}
+    <div
+      className="mb-3 overflow-hidden rounded-sm border p-5 transition-all hover:opacity-90"
+      style={{
+        backgroundColor: themeColors.surface,
+        borderColor: isComplete ? accentColor : themeColors.border,
+        borderWidth: isComplete ? '2px' : '1px',
+      }}
     >
-      {/* Accent Bar - Estilo Windows */}
-      <View style={[
-        styles.accentBar,
-        { backgroundColor: isComplete ? '#107C10' : accentColor }
-      ]} />
+      <div className="mb-3 flex items-start justify-between">
+        <h3
+          className="font-segoe text-lg font-semibold lowercase"
+          style={{ color: isComplete ? accentColor : themeColors.text }}
+        >
+          {exercise.title}
+        </h3>
+        <span 
+          className="rounded-sm px-2 py-1 font-segoe text-xs uppercase font-bold"
+          style={{ 
+            backgroundColor: isComplete ? accentColor : themeColors.border,
+            color: isComplete ? '#fff' : themeColors.textSecondary 
+          }}
+        >
+          {completedCount}/{exercise.sets}
+        </span>
+      </div>
 
-      <View style={styles.exerciseContent}>
-        <View style={styles.exerciseHeader}>
-          <Text style={[styles.exerciseTitle, { color: colors.text }]}>{exercise.title.toLowerCase()}</Text>
-          <TouchableOpacity 
-            style={[
-              styles.videoButton, 
-              hasVideo && { backgroundColor: accentColor },
-              !hasVideo && styles.videoButtonDisabled
-            ]}
-            onPress={hasVideo ? onVideoPress : undefined}
-            activeOpacity={hasVideo ? 0.8 : 1}
-            disabled={!hasVideo}
+      <div className="mb-4 flex gap-4 font-segoe text-sm" style={{ color: themeColors.textSecondary }}>
+        <span>📊 {exercise.sets} séries</span>
+        <span>🔁 {exercise.reps} reps</span>
+        <span>⏱️ {exercise.rest}</span>
+      </div>
+
+      {/* Weight Input - Only show if studentId is provided */}
+      {studentId && (
+        <div className="mb-4 flex items-center gap-2">
+          <MetroInput
+            type="number"
+            value={weight}
+            onChange={setWeight}
+            placeholder="Peso (kg)"
+            accentColor={accentColor}
+            bgColor={themeColors.surface}
+            textColor={themeColors.text}
+            className="w-24"
+          />
+          <MetroButton
+            onClick={handleSaveWeight}
+            disabled={saving || !weight || parseFloat(weight) <= 0}
+            variant="primary"
+            accentColor={accentColor}
+            size="sm"
           >
-            <Text style={[styles.videoButtonText, !hasVideo && styles.videoButtonTextDisabled]}>▶</Text>
-          </TouchableOpacity>
-        </View>
+            {saving ? '...' : 'salvar'}
+          </MetroButton>
+          {lastWeight && (
+            <span className="font-segoe text-xs" style={{ color: themeColors.textSecondary }}>
+              último: {lastWeight}kg
+            </span>
+          )}
+        </div>
+      )}
 
-        <View style={styles.exerciseInfo}>
-          <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>séries</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>{exercise.sets}x{exercise.reps}</Text>
-          </View>
-          <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>descanso</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>{exercise.rest}</Text>
-          </View>
-        </View>
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: exercise.sets }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => toggleSet(index)}
+            className="flex h-12 w-12 items-center justify-center rounded-sm border-2 font-segoe text-sm font-bold transition-all hover:scale-105 active:scale-95"
+            style={{
+              backgroundColor: completedSets[index] ? accentColor : 'transparent',
+              borderColor: completedSets[index] ? accentColor : themeColors.border,
+              color: completedSets[index] ? '#fff' : themeColors.text,
+            }}
+          >
+            {completedSets[index] ? '✓' : index + 1}
+          </button>
+        ))}
+      </div>
 
-        {exercise.tip && (
-          <View style={[styles.tipContainer, { backgroundColor: colors.backgroundSecondary }]}>
-            <Text style={[styles.tip, { color: colors.textSecondary }]}>{exercise.tip}</Text>
-          </View>
-        )}
+      {exercise.tip && (
+        <p className="mt-4 rounded-sm border-l-4 bg-opacity-10 p-3 font-segoe text-sm italic" style={{ 
+          color: themeColors.textSecondary,
+          borderColor: accentColor,
+          backgroundColor: `${accentColor}10`
+        }}>
+          💡 {exercise.tip}
+        </p>
+      )}
 
-        {/* Sets - Estilo Metro Grid */}
-        <View style={styles.setsContainer}>
-          {Array.from({ length: exercise.sets }).map((_, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.setButton,
-                { 
-                  backgroundColor: colors.backgroundSecondary,
-                  borderColor: colors.border 
-                },
-                completedSets[index] && { 
-                  backgroundColor: accentColor,
-                  borderColor: accentColor 
-                }
-              ]}
-              onPress={() => onToggleSet(index)}
-              activeOpacity={0.8}
+      {exercise.video && (
+        <MetroButton
+          onClick={() => setShowVideoModal(true)}
+          variant="primary"
+          accentColor={accentColor}
+          size="sm"
+          className="mt-4"
+        >
+          ▶️ assistir vídeo
+        </MetroButton>
+      )}
+
+      {/* Video Modal */}
+      {showVideoModal && videoId && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+          onClick={() => setShowVideoModal(false)}
+        >
+          <div 
+            className="relative w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowVideoModal(false)}
+              className="absolute -right-4 -top-4 flex h-10 w-10 items-center justify-center bg-white text-black hover:bg-gray-200 border-2 border-black z-10"
+              style={{ borderRadius: '50%' }}
             >
-              <Text style={[
-                styles.setButtonText,
-                { color: colors.textSecondary },
-                completedSets[index] && styles.setButtonTextDone
-              ]}>
-                {index + 1}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </View>
+              ✕
+            </button>
+            <div className="relative overflow-hidden rounded-sm" style={{ paddingBottom: '177.78%' }}>
+              <iframe
+                className="absolute inset-0 h-full w-full"
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+                title={exercise.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
-};
-
-export default memo(ExerciseCard);
-
-const styles = StyleSheet.create({
-  exerciseCard: {
-    backgroundColor: '#1F1F1F',
-    marginBottom: 8,
-    flexDirection: 'row',
-  },
-  exerciseCardCompleted: {
-    opacity: 0.6,
-  },
-  accentBar: {
-    width: 4,
-    backgroundColor: '#0078D4',
-  },
-  exerciseContent: {
-    flex: 1,
-    padding: 20,
-  },
-  exerciseHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  exerciseTitle: {
-    fontSize: 18,
-    fontWeight: '400',
-    color: '#FFFFFF',
-    flex: 1,
-    marginRight: 12,
-    textTransform: 'lowercase',
-    letterSpacing: 0.3,
-  },
-  videoButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#0078D4',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  videoButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  videoButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  videoButtonTextDisabled: {
-    color: 'rgba(255, 255, 255, 0.35)',
-  },
-  exerciseInfo: {
-    marginBottom: 16,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  infoLabel: {
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
-    textTransform: 'lowercase',
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '300',
-  },
-  tipContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: 12,
-    marginBottom: 16,
-  },
-  tip: {
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.7)',
-    lineHeight: 18,
-  },
-  setsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4, // Mais espaçamento entre botões
-  },
-  setButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5, // Border mais visível
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  setButtonDone: {
-    backgroundColor: '#0078D4',
-    borderColor: '#0078D4',
-  },
-  setButtonText: {
-    fontWeight: '300',
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 18,
-  },
-  setButtonTextDone: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-});
+}

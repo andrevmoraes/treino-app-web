@@ -1,36 +1,29 @@
-import { Platform } from 'react-native';
-
 /**
- * Fonte padrão Windows Phone/Metro UI
- */
-export const METRO_FONT_FAMILY = Platform.select({
-  web: '"Segoe UI Light", system-ui, Roboto, Arial, sans-serif',
-  ios: 'System',
-  android: 'sans-serif-light',
-  default: 'System',
-});
-
-/**
- * Cores do tema Metro/Windows Phone
+ * Cores e estilos do Metro UI
  */
 export const METRO_COLORS = {
-  background: '#000000',
-  accent: '#0078D7',
-  text: '#FFFFFF',
-  textSecondary: 'rgba(255, 255, 255, 0.6)',
-  textTertiary: 'rgba(255, 255, 255, 0.35)',
-  cardBackground: '#1F1F1F',
-  border: 'rgba(255, 255, 255, 0.1)',
+  blue: '#0078D7',
+  cyan: '#00B7C3',
+  red: '#E81123',
+  green: '#107C10',
+  purple: '#8E3EA1',
+  orange: '#FF8C00',
+  darkBlue: '#0063B1',
+  darkCyan: '#008272',
 } as const;
 
-/**
- * Espaçamentos consistentes
- */
 export const METRO_SPACING = {
-  xs: 2,
-  sm: 4,
-  md: 8,
+  xs: 4,
+  sm: 8,
+  md: 12,
   lg: 16,
-  xl: 20,
-  xxl: 24,
+  xl: 24,
+  xxl: 32,
 } as const;
+
+export const METRO_FONT_FAMILY = {
+  regular: 'Segoe UI',
+  light: 'Segoe UI Light',
+  semibold: 'Segoe UI Semibold',
+} as const;
+

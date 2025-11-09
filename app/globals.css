@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #11181c;
+  --text-secondary: #687076;
+  --border: #e5e7eb;
+  
+  /* Metro UI Colors */
+  --metro-blue: #0078D7;
+  --metro-cyan: #00B7C3;
+  --metro-red: #E81123;
+  --metro-green: #107C10;
+  --metro-purple: #8E3EA1;
+  --metro-orange: #FF8C00;
+  --metro-dark-blue: #0063B1;
+  --metro-dark-cyan: #008272;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #ecedee;
+  --text-secondary: #9ba1a6;
+  --border: #1f2937;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Metro UI Custom Styles */
+.metro-tile {
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.metro-tile:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.metro-tile:hover {
+  transform: translateY(-2px);
+}
+
+/* Custom scrollbar for Metro UI feel */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0078d7;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #005a9e;
+}
+
+/* Windows 10/11 Loading Animation */
+@keyframes windows-dot {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-windows-dot {
+  animation: windows-dot 1.2s ease-in-out infinite;
+}
