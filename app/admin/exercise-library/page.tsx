@@ -29,7 +29,7 @@ const CATEGORIES = ['todos', 'peito', 'costas', 'pernas', 'ombros', 'braços', '
 
 export default function ExerciseLibraryPage() {
   const router = useRouter();
-  const { professor, isLoading: authLoading } = useAdminAuth();
+  const { professor } = useAdminAuth();
   const { colorScheme } = useTheme();
   const [templates, setTemplates] = useState<ExerciseTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,14 +40,12 @@ export default function ExerciseLibraryPage() {
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    if (authLoading) return; // Espera carregar do localStorage
-    
     if (!professor) {
       router.push('/admin/login');
       return;
     }
     loadTemplates();
-  }, [professor, authLoading, selectedCategory, searchTerm, router]);
+  }, [professor, selectedCategory, searchTerm, router]);
 
   async function loadTemplates() {
     try {

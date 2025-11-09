@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { professor, signOut, isLoading: authLoading } = useAdminAuth();
+  const { professor, signOut } = useAdminAuth();
   const { colorScheme } = useTheme();
   const [students, setStudents] = useState<Student[]>([]);
   const [stats, setStats] = useState<ProfessorDashboardStats | null>(null);
@@ -20,15 +20,13 @@ export default function AdminDashboardPage() {
   const [showNewStudentModal, setShowNewStudentModal] = useState(false);
 
   useEffect(() => {
-    if (authLoading) return; // Espera carregar do localStorage
-    
     if (!professor) {
       router.push('/admin/login');
       return;
     }
 
     loadData();
-  }, [professor, authLoading, router]);
+  }, [professor, router]);
 
   const loadData = async () => {
     try {

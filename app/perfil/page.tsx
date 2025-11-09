@@ -1,6 +1,6 @@
 'use client';
 
-import { MetroButton, MetroHeader, MetroLoading, MetroTile } from '@/components/metro-ui';
+import { MetroButton, MetroHeader, MetroTile } from '@/components/metro-ui';
 import { MetroColors, ThemeColors } from '@/constants/metro-design-system';
 import { useAuth } from '@/contexts/auth-context';
 import { useTheme } from '@/contexts/theme-context';
@@ -8,18 +8,16 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function PerfilPage() {
-  const { student, signOut, isLoading: authLoading } = useAuth();
-  const { accentColor, themeMode, setThemeMode, colorScheme } = useTheme();
+  const { student, signOut } = useAuth();
+  const { accentColor, themeMode, setThemeMode, setAccentColor, colorScheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
-    if (authLoading) return; // Espera carregar do localStorage
-    
     if (!student) {
       router.push('/login');
       return;
     }
-  }, [student, authLoading, router]);
+  }, [student, router]);
 
   const handleLogout = async () => {
     await signOut();
@@ -28,8 +26,8 @@ export default function PerfilPage() {
 
   const themeColors = ThemeColors[colorScheme];
 
-  if (authLoading) {
-    return <MetroLoading fullScreen />;
+  if (!student) {
+    return null; // Vai redirecionar no useEffect
   }
 
   return (
@@ -165,14 +163,12 @@ export default function PerfilPage() {
                   size="small"
                   color={color}
                   hoverable
-                  onClick={() => {
-                    // Função para alterar cor de acento seria implementada no ThemeContext
-                  }}
+                  onClick={() => setAccentColor(color)}
                 >
                   <div className="flex items-center justify-center h-full">
-                    <span className="font-segoe text-xs uppercase text-white opacity-60">
-                      {name}
-                    </span>
+                    {accentColor === color && (
+                      <span className="font-segoe text-2xl text-white">✓</span>
+                    )}
                   </div>
                 </MetroTile>
               ))}

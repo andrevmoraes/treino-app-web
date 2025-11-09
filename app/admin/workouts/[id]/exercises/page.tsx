@@ -29,7 +29,7 @@ export default function ManageExercisesPage() {
   const router = useRouter();
   const params = useParams();
   const workoutId = params.id as string;
-  const { professor, isLoading: authLoading } = useAdminAuth();
+  const { professor } = useAdminAuth();
   const { colorScheme } = useTheme();
 
   const [workout, setWorkout] = useState<Workout | null>(null);
@@ -40,15 +40,13 @@ export default function ManageExercisesPage() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   useEffect(() => {
-    if (authLoading) return; // Espera carregar do localStorage
-    
     if (!professor) {
       router.push('/admin/login');
       return;
     }
 
     loadWorkoutData();
-  }, [professor, authLoading, workoutId, router]);
+  }, [professor, workoutId, router]);
 
   const loadWorkoutData = async () => {
     try {

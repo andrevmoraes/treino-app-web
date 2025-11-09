@@ -28,7 +28,7 @@ export default function StudentDetailPage() {
   const router = useRouter();
   const params = useParams();
   const studentId = params.id as string;
-  const { professor, isLoading: authLoading } = useAdminAuth();
+  const { professor } = useAdminAuth();
   const { colorScheme } = useTheme();
 
   const [student, setStudent] = useState<Student | null>(null);
@@ -39,15 +39,13 @@ export default function StudentDetailPage() {
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
 
   useEffect(() => {
-    if (authLoading) return; // Espera carregar do localStorage
-    
     if (!professor) {
       router.push('/admin/login');
       return;
     }
 
     loadStudentData();
-  }, [professor, authLoading, studentId, router]);
+  }, [professor, studentId, router]);
 
   const loadStudentData = async () => {
     try {

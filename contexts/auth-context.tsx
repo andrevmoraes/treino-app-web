@@ -2,42 +2,46 @@
 
 import type { Student } from '@/types/database';
 import { Session, User } from '@supabase/supabase-js';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface AuthContextType {
   user: User | null;
   student: Student | null;
   session: Session | null;
-  isLoading: boolean;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [student, setStudent] = useState<Student | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+// ⚡ OTIMIZAÇÃO: Carrega localStorage INSTANTANEAMENTE (síncrono)
+const getInitialAuth = (): { user: User | null; student: Student | null } => {
+  if (typeof window === 'undefined') return { user: null, student: null };
+  
+  const savedStudent = localStorage.getItem('student');
+  if (!savedStudent) return { user: null, student: null };
+  
+  try {
+    const studentData = JSON.parse(savedStudent);
+    const user: User = {
+      id: studentData.id,
+      user_metadata: { phone: studentData.phone },
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: studentData.created_at,
+    } as User;
+    
+    return { user, student: studentData };
+  } catch {
+    return { user: null, student: null };
+  }
+};
 
-  useEffect(() => {
-    // Verifica se há estudante salvo no localStorage
-    const savedStudent = localStorage.getItem('student');
-    if (savedStudent) {
-      const studentData = JSON.parse(savedStudent);
-      setStudent(studentData);
-      // Criar User compatível com o formato antigo
-      setUser({
-        id: studentData.id,
-        user_metadata: { phone: studentData.phone },
-        app_metadata: {},
-        aud: 'authenticated',
-        created_at: studentData.created_at,
-      } as User);
-    }
-    setIsLoading(false);
-  }, []);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const initialAuth = getInitialAuth();
+  const [user, setUser] = useState<User | null>(initialAuth.user);
+  const [student, setStudent] = useState<Student | null>(initialAuth.student);
+  const [session, setSession] = useState<Session | null>(null);
 
   const signInWithPhone = async (phone: string) => {
     try {
@@ -88,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, student, session, isLoading, signInWithPhone, signOut }}>
+    <AuthContext.Provider value={{ user, student, session, signInWithPhone, signOut }}>
       {children}
     </AuthContext.Provider>
   );

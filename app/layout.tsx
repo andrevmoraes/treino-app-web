@@ -1,3 +1,4 @@
+import { AccentColorProvider } from '@/components/accent-color-provider';
 import { AdminAuthProvider } from '@/contexts/admin-auth-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/contexts/theme-context';
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <ThemeProvider>
+          <AccentColorProvider />
           <AuthProvider>
             <AdminAuthProvider>{children}</AdminAuthProvider>
           </AuthProvider>

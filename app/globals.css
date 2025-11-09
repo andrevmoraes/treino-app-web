@@ -8,6 +8,9 @@
   --text-secondary: #687076;
   --border: #e5e7eb;
   
+  /* 🎨 Accent Color (Windows Phone Style) */
+  --accent-color: #0078D7; /* Padrão: Metro Blue, sobrescrito dinamicamente */
+  
   /* Metro UI Colors */
   --metro-blue: #0078D7;
   --metro-cyan: #00B7C3;
@@ -51,6 +54,66 @@ a {
   text-decoration: none;
 }
 
+/* 🎨 Windows Phone Style: Accent Color em todo o sistema */
+
+/* Links e elementos interativos */
+a:hover,
+button:hover {
+  color: var(--accent-color);
+}
+
+/* Selection (texto selecionado) */
+::selection {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* Focus visible (acessibilidade) */
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Scrollbar com accent color */
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+  filter: brightness(0.8);
+}
+
+/* Progress bars e loaders */
+progress::-webkit-progress-value {
+  background-color: var(--accent-color);
+}
+
+progress::-moz-progress-bar {
+  background-color: var(--accent-color);
+}
+
+/* Checkboxes e radios checked */
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  accent-color: var(--accent-color);
+}
+
+/* Range sliders */
+input[type="range"]::-webkit-slider-thumb {
+  background: var(--accent-color);
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: var(--accent-color);
+}
+
 /* Metro UI Custom Styles */
 .metro-tile {
   transition: transform 0.15s ease-out, opacity 0.15s ease-out;
@@ -72,15 +135,6 @@ a {
 
 ::-webkit-scrollbar-track {
   background: var(--background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: #0078d7;
-  border-radius: 0;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #005a9e;
 }
 
 /* Windows 10/11 Loading Animation */

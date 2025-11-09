@@ -2,29 +2,32 @@
 
 import { getProfessorByEmail } from '@/lib/database';
 import type { Professor } from '@/types/database';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface AdminAuthContextType {
   professor: Professor | null;
-  isLoading: boolean;
   signInWithEmailPassword: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
-export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [professor, setProfessor] = useState<Professor | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+// ⚡ OTIMIZAÇÃO: Carrega professor INSTANTANEAMENTE do localStorage
+const getInitialProfessor = (): Professor | null => {
+  if (typeof window === 'undefined') return null;
+  
+  const savedProfessor = localStorage.getItem('professor');
+  if (!savedProfessor) return null;
+  
+  try {
+    return JSON.parse(savedProfessor);
+  } catch {
+    return null;
+  }
+};
 
-  useEffect(() => {
-    // Verifica se há professor salvo no localStorage
-    const savedProfessor = localStorage.getItem('professor');
-    if (savedProfessor) {
-      setProfessor(JSON.parse(savedProfessor));
-    }
-    setIsLoading(false);
-  }, []);
+export function AdminAuthProvider({ children }: { children: ReactNode }) {
+  const [professor, setProfessor] = useState<Professor | null>(getInitialProfessor());
 
   const signInWithEmailPassword = async (email: string, password: string) => {
     try {
@@ -74,7 +77,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AdminAuthContext.Provider value={{ professor, isLoading, signInWithEmailPassword, signOut }}>
+    <AdminAuthContext.Provider value={{ professor, signInWithEmailPassword, signOut }}>
       {children}
     </AdminAuthContext.Provider>
   );

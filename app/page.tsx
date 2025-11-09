@@ -7,15 +7,15 @@ import { useEffect } from 'react';
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!user) {
       router.push('/login');
-    } else if (!isLoading && user) {
+    } else {
       router.push('/home');
     }
-  }, [user, isLoading, router]);
+  }, [user, router]);
 
   return <MetroLoading fullScreen />;
 }
