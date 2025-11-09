@@ -38,12 +38,14 @@ export function MetroButton({
     border-none transition-all duration-200
     disabled:opacity-50 disabled:cursor-not-allowed
     active:scale-95
+    touch-manipulation
+    min-h-[44px] md:min-h-[40px]
   `;
 
   const sizeStyles = {
-    sm: 'h-8 px-3 text-xs',
-    base: 'h-10 px-5 text-sm',
-    lg: 'h-12 px-7 text-base',
+    sm: 'h-10 md:h-8 px-4 md:px-3 text-xs',
+    base: 'h-12 md:h-10 px-6 md:px-5 text-sm',
+    lg: 'h-14 md:h-12 px-8 md:px-7 text-base',
   };
 
   const variantStyles = {

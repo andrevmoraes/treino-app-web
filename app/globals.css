@@ -98,3 +98,104 @@ a {
 .animate-windows-dot {
   animation: windows-dot 1.2s ease-in-out infinite;
 }
+
+/* ============================================ */
+/* MOBILE OPTIMIZATIONS */
+/* ============================================ */
+
+/* Touch optimization - remove tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth scrolling for mobile */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Better touch targets - minimum 44x44px */
+button, a, input, select, textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improve scrolling performance on iOS */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
+/* Prevent horizontal scroll */
+body {
+  overflow-x: hidden;
+}
+
+/* Safe area for notch devices (iPhone X+) */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Improve button touch feedback */
+button:active, .metro-tile:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Better focus visibility for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--metro-blue);
+  outline-offset: 2px;
+}
+
+/* Hide focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Optimize animations for mobile (reduce motion if preferred) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile-specific viewport improvements */
+@media (max-width: 768px) {
+  /* Increase touch targets on mobile */
+  button, a {
+    min-height: 48px;
+  }
+
+  /* Better spacing for mobile */
+  .p-4 {
+    padding: 1rem;
+  }
+
+  /* Optimize text readability on mobile */
+  body {
+    font-size: 16px; /* Prevent zoom on focus in iOS */
+  }
+
+  input, textarea, select {
+    font-size: 16px; /* Prevent zoom on focus in iOS */
+  }
+}
