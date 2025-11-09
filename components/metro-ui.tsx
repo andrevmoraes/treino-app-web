@@ -169,11 +169,13 @@ export function MetroInput({
       placeholder={placeholder}
       disabled={disabled}
       className={`
-        h-10 px-3 font-segoe text-sm
+        h-12 md:h-10 px-4 md:px-3 
+        font-segoe text-base md:text-sm
         border-2 border-transparent
         transition-all duration-200
         focus:outline-none focus:border-opacity-100
         disabled:opacity-50 disabled:cursor-not-allowed
+        touch-manipulation
         ${error ? 'border-red-500' : ''}
         ${widthStyle}
         ${className}
@@ -182,6 +184,7 @@ export function MetroInput({
         backgroundColor: bgColor,
         color: textColor,
         borderColor: error ? MetroColors.red : 'transparent',
+        fontSize: '16px', // Critical: prevent zoom on iOS
       }}
       onFocus={(e) => {
         e.target.style.borderColor = accentColor;
