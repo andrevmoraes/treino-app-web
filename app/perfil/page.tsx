@@ -7,34 +7,34 @@ import { useTheme } from '@/contexts/theme-context';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function PerfilPage() {
+export default function ConfiguracoesPage() {
   const { student, signOut } = useAuth();
   const { accentColor, themeMode, setThemeMode, setAccentColor, colorScheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
     if (!student) {
-      router.push('/login');
-      return;
+      router.replace('/login');
     }
   }, [student, router]);
 
   const handleLogout = async () => {
     await signOut();
-    router.push('/login');
+    router.replace('/login');
   };
 
   const themeColors = ThemeColors[colorScheme];
 
+  // Aguarda verificação de autenticação
   if (!student) {
-    return null; // Vai redirecionar no useEffect
+    return null;
   }
 
   return (
     <div className="min-h-screen p-4 md:p-6" style={{ backgroundColor: themeColors.background }}>
       <div className="mx-auto max-w-2xl">
         <MetroHeader
-          title="perfil"
+          title="configurações"
           onBack={() => router.push('/home')}
         />
 
@@ -44,30 +44,26 @@ export default function PerfilPage() {
             borderColor: themeColors.border,
             backgroundColor: themeColors.surface 
           }}>
-            <h2 className="mb-4 font-segoe text-xl lowercase" style={{ color: themeColors.text }}>
-              📱 informações
+            <h2 className="mb-4 font-segoe text-sm uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+              informações
             </h2>
-            <div className="flex items-center gap-3">
-              <div 
-                className="flex h-12 w-12 items-center justify-center rounded-sm text-2xl"
-                style={{ backgroundColor: accentColor }}
-              >
-                👤
+            <div className="space-y-3">
+              <div>
+                <p className="mb-1 font-segoe text-xs uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+                  nome
+                </p>
+                <p className="font-segoe text-base" style={{ color: themeColors.text }}>
+                  {student?.name || 'Não informado'}
+                </p>
               </div>
-              <p className="font-segoe text-lg" style={{ color: themeColors.text }}>
-                {student?.name || 'Não informado'}
-              </p>
-            </div>
-            <div className="mt-3 flex items-center gap-3">
-              <div 
-                className="flex h-12 w-12 items-center justify-center rounded-sm text-2xl"
-                style={{ backgroundColor: MetroColors.green }}
-              >
-                �
+              <div>
+                <p className="mb-1 font-segoe text-xs uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+                  telefone
+                </p>
+                <p className="font-segoe text-base" style={{ color: themeColors.text }}>
+                  {student?.phone || 'Não informado'}
+                </p>
               </div>
-              <p className="font-segoe text-lg" style={{ color: themeColors.text }}>
-                {student?.phone || 'Não informado'}
-              </p>
             </div>
           </div>
 
@@ -76,8 +72,8 @@ export default function PerfilPage() {
             borderColor: themeColors.border,
             backgroundColor: themeColors.surface 
           }}>
-            <h2 className="mb-4 font-segoe text-xl lowercase" style={{ color: themeColors.text }}>
-              🎨 aparência
+            <h2 className="mb-4 font-segoe text-sm uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+              aparência
             </h2>
             <div className="grid grid-cols-3 gap-3">
               <MetroTile
@@ -87,9 +83,8 @@ export default function PerfilPage() {
                 onClick={() => setThemeMode('light')}
               >
                 <div className="flex flex-col items-center justify-center h-full gap-2">
-                  <span className="text-3xl">☀️</span>
                   <span 
-                    className="font-segoe text-xs uppercase"
+                    className="font-segoe text-sm uppercase tracking-wider"
                     style={{ 
                       color: themeMode === 'light' ? '#FFFFFF' : themeColors.textSecondary 
                     }}
@@ -106,9 +101,8 @@ export default function PerfilPage() {
                 onClick={() => setThemeMode('dark')}
               >
                 <div className="flex flex-col items-center justify-center h-full gap-2">
-                  <span className="text-3xl">🌙</span>
                   <span 
-                    className="font-segoe text-xs uppercase"
+                    className="font-segoe text-sm uppercase tracking-wider"
                     style={{ 
                       color: themeMode === 'dark' ? '#FFFFFF' : themeColors.textSecondary 
                     }}
@@ -125,9 +119,8 @@ export default function PerfilPage() {
                 onClick={() => setThemeMode('system')}
               >
                 <div className="flex flex-col items-center justify-center h-full gap-2">
-                  <span className="text-3xl">⚙️</span>
                   <span 
-                    className="font-segoe text-xs uppercase"
+                    className="font-segoe text-sm uppercase tracking-wider"
                     style={{ 
                       color: themeMode === 'system' ? '#FFFFFF' : themeColors.textSecondary 
                     }}
@@ -144,8 +137,8 @@ export default function PerfilPage() {
             borderColor: themeColors.border,
             backgroundColor: themeColors.surface 
           }}>
-            <h2 className="mb-4 font-segoe text-xl lowercase" style={{ color: themeColors.text }}>
-              🎨 cor de destaque
+            <h2 className="mb-4 font-segoe text-sm uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+              cor de destaque
             </h2>
             <div className="grid grid-cols-4 gap-3">
               {[
@@ -183,7 +176,7 @@ export default function PerfilPage() {
             fullWidth
             size="lg"
           >
-            🚪 sair
+            sair
           </MetroButton>
         </div>
       </div>

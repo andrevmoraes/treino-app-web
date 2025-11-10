@@ -81,7 +81,44 @@ export function MetroButton({
 
 // ============================================
 // METRO TILE (Card quadrado/retangular)
+// Sistema de Tiles do Windows Phone
 // ============================================
+/**
+ * SISTEMA DE TILES - WINDOWS PHONE LAYOUT
+ * 
+ * Tamanhos disponíveis (baseado no Windows Phone 8/8.1/10):
+ * 
+ * 1️⃣ SMALL (1x1) - 71x71px no WP
+ *    - Grid: col-span-1 (1 coluna)
+ *    - Uso: Ações rápidas, mini widgets
+ *    - Futuro: Botões de ação, atalhos
+ * 
+ * 2️⃣ MEDIUM (2x2) - 150x150px no WP
+ *    - Grid: col-span-1 (1 coluna no grid de 2)
+ *    - Uso: Apps principais, tiles de treino
+ *    - Atual: Tiles de treino A/B/C/D, Perfil
+ * 
+ * 3️⃣ WIDE (4x2) - 310x150px no WP
+ *    - Grid: col-span-2 (2 colunas)
+ *    - Uso: Live Tiles, destaque, informações amplas
+ *    - Atual: Live Tile "Olá, [nome]" com flip
+ * 
+ * 4️⃣ LARGE (4x4) - 310x310px no WP
+ *    - Grid: col-span-2 row-span-2
+ *    - Uso: Calendário, fotos, destaque principal
+ *    - Futuro: Dashboard de progresso, gráficos
+ * 
+ * GRID LAYOUT:
+ * Mobile: 2 colunas (portrait)
+ * Tablet: 4 colunas (landscape ou tablets)
+ * Desktop: 4-6 colunas (monitores grandes)
+ * 
+ * COMPORTAMENTO:
+ * - SEM animação de hover/scale (igual Windows Phone original)
+ * - Apenas feedback tátil ao pressionar (active:opacity-80)
+ * - Touch-optimized (44px mínimo de área tocável)
+ * - Gap de 2-3px entre tiles (fiel ao original)
+ */
 
 interface MetroTileProps {
   children: ReactNode;
@@ -100,25 +137,33 @@ export function MetroTile({
   className = '',
   hoverable = true,
 }: MetroTileProps) {
+  // Sistema de tiles do Windows Phone:
+  // small = 1x1 (71x71px no WP, equivalente a col-span-1)
+  // medium = 2x2 (150x150px no WP, equivalente a col-span-1 no grid de 2 colunas)
+  // wide = 4x2 (310x150px no WP, equivalente a col-span-2)
+  // large = 4x4 (310x310px no WP, equivalente a col-span-2 row-span-2)
   const sizeStyles = {
-    small: 'aspect-square',
-    medium: 'aspect-square md:col-span-1',
-    large: 'aspect-square md:col-span-2 md:row-span-2',
-    wide: 'aspect-[2/1] md:col-span-2',
+    small: 'aspect-square', // 1x1 (futuro)
+    medium: 'aspect-square', // 2x2 (atual)
+    wide: 'aspect-[2/1]', // 4x2 (Live Tile)
+    large: 'aspect-square', // 4x4 (futuro)
   };
 
-  const hoverStyles = hoverable
-    ? 'hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer'
+  // Windows Phone NÃO tem animação de hover - tiles são estáticos
+  // Apenas feedback tátil ao pressionar (active state)
+  const interactionStyles = hoverable
+    ? 'cursor-pointer active:opacity-80 touch-manipulation'
     : '';
 
   return (
     <div
       onClick={onClick}
       className={`
-        p-6 flex flex-col justify-between
-        transition-all duration-200
+        p-4 sm:p-5 md:p-6 
+        flex flex-col justify-between
+        transition-opacity duration-100
         ${sizeStyles[size]}
-        ${hoverStyles}
+        ${interactionStyles}
         ${className}
       `}
       style={{ backgroundColor: color }}
@@ -171,9 +216,9 @@ export function MetroInput({
       className={`
         h-12 md:h-10 px-4 md:px-3 
         font-segoe text-base md:text-sm
-        border-2 border-transparent
+        border-2
         transition-all duration-200
-        focus:outline-none focus:border-opacity-100
+        focus:outline-none
         disabled:opacity-50 disabled:cursor-not-allowed
         touch-manipulation
         ${error ? 'border-red-500' : ''}
@@ -183,7 +228,7 @@ export function MetroInput({
       style={{
         backgroundColor: bgColor,
         color: textColor,
-        borderColor: error ? MetroColors.red : 'transparent',
+        borderColor: error ? MetroColors.red : '#666666',
         fontSize: '16px', // Critical: prevent zoom on iOS
       }}
       onFocus={(e) => {
@@ -191,7 +236,7 @@ export function MetroInput({
       }}
       onBlur={(e) => {
         if (!error) {
-          e.target.style.borderColor = 'transparent';
+          e.target.style.borderColor = '#666666';
         }
       }}
     />

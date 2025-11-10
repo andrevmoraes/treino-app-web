@@ -47,6 +47,28 @@ body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* 📱 Mobile optimizations (Windows Phone style) */
+  /* Previne zoom ao tocar em inputs no iOS */
+  font-size: 16px;
+  
+  /* Melhora performance de scroll */
+  -webkit-overflow-scrolling: touch;
+  
+  /* Desabilita seleção de texto em tiles (comportamento do WP) */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  
+  /* Desabilita tap highlight no mobile (WP não tinha) */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Re-habilita seleção de texto onde faz sentido */
+p, span, h1, h2, h3, h4, h5, h6, input, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 
 a {
@@ -238,6 +260,23 @@ button:active, .metro-tile:active {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* 📱 Safe Area para Notch e Alcançabilidade (iOS/Android) */
+.pt-safe {
+  /* Padding superior seguro para notch/Dynamic Island/status bar */
+  padding-top: max(env(safe-area-inset-top, 0px), 1rem);
+}
+
+.pb-safe {
+  /* Padding inferior seguro para gesture bar iOS */
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 1rem);
+}
+
+.px-safe {
+  /* Padding lateral seguro */
+  padding-left: max(env(safe-area-inset-left, 0px), 0.75rem);
+  padding-right: max(env(safe-area-inset-right, 0px), 0.75rem);
 }
 
 /* Mobile-specific viewport improvements */

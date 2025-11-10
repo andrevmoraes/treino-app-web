@@ -13,6 +13,8 @@ export function AccentColorProvider() {
   const { accentColor } = useTheme();
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     // Injeta --accent-color no :root para uso global
     document.documentElement.style.setProperty('--accent-color', accentColor);
   }, [accentColor]);

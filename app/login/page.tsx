@@ -46,23 +46,21 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6" style={{ backgroundColor: themeColors.background }}>
       <div className="w-full max-w-md">
-        <div className="mb-12 text-center">
-          <div 
-            className="mx-auto mb-4 h-20 w-20 rounded-sm"
-            style={{ backgroundColor: accentColor }}
-          />
-          <h1 className="mb-2 font-segoe text-5xl font-light lowercase" style={{ color: themeColors.text }}>
+        {/* Header - Windows Phone Style */}
+        <div className="mb-12">
+          <h1 className="mb-2 font-segoe text-6xl font-extralight lowercase" style={{ color: themeColors.text }}>
             treino
           </h1>
-          <h2 className="font-segoe text-xl lowercase" style={{ color: themeColors.textSecondary }}>
-            app de treinos
-          </h2>
+          <div 
+            className="mt-1 h-1 w-24"
+            style={{ backgroundColor: accentColor }}
+          />
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="mb-2 block font-segoe text-sm uppercase tracking-wide" style={{ color: themeColors.textSecondary }}>
-              📱 TELEFONE
+            <label className="mb-2 block font-segoe text-xs uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+              telefone
             </label>
             <MetroInput
               type="tel"
@@ -78,8 +76,15 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="rounded-sm border-2 border-red-500 bg-red-50 p-3 text-sm text-red-700">
-              ⚠️ {error}
+            <div 
+              className="border-l-4 p-4 font-segoe text-sm lowercase"
+              style={{ 
+                borderColor: '#e74856',
+                backgroundColor: colorScheme === 'dark' ? 'rgba(231, 72, 86, 0.1)' : 'rgba(231, 72, 86, 0.05)',
+                color: '#e74856'
+              }}
+            >
+              {error}
             </div>
           )}
 
@@ -91,13 +96,19 @@ export default function LoginPage() {
             fullWidth
             size="lg"
           >
-            {loading ? '⏳ entrando...' : '→ entrar'}
+            {loading ? 'entrando...' : 'entrar'}
           </MetroButton>
         </form>
 
-        <p className="mt-8 text-center font-segoe text-sm" style={{ color: themeColors.textSecondary }}>
-          💡 Aluno não cadastrado? Entre em contato com seu professor
-        </p>
+        <div className="mt-8">
+          <a 
+            href="/admin/login"
+            className="font-segoe text-xs uppercase tracking-wider opacity-40 transition-opacity hover:opacity-100"
+            style={{ color: themeColors.textSecondary }}
+          >
+            área do professor
+          </a>
+        </div>
       </div>
     </div>
   );

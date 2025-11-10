@@ -10,6 +10,7 @@ interface AuthContextType {
   session: Session | null;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  updateStudent: (updatedData: Partial<Student>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -91,8 +92,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user'); // Backward compatibility
   };
 
+  const updateStudent = (updatedData: Partial<Student>) => {
+    if (!student) return;
+    
+    const updatedStudent = { ...student, ...updatedData };
+    setStudent(updatedStudent);
+    
+    // Atualiza user também se necessário
+    if (updatedData.name || updatedData.phone) {
+      setUser({
+        ...user,
+        user_metadata: { 
+          ...(user?.user_metadata || {}), 
+          name: updatedData.name || student.name,
+          phone: updatedData.phone || student.phone 
+        },
+      } as User);
+    }
+    
+    localStorage.setItem('student', JSON.stringify(updatedStudent));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, student, session, signInWithPhone, signOut }}>
+    <AuthContext.Provider value={{ user, student, session, signInWithPhone, signOut, updateStudent }}>
       {children}
     </AuthContext.Provider>
   );

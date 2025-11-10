@@ -1,15 +1,16 @@
 'use client';
 
 import { MetroButton, MetroInput } from '@/components/metro-ui';
-import { MetroColors } from '@/constants/metro-design-system';
+import { ThemeColors } from '@/constants/metro-design-system';
 import { useAdminAuth } from '@/contexts/admin-auth-context';
-import Link from 'next/link';
+import { useTheme } from '@/contexts/theme-context';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const { signInWithEmailPassword } = useAdminAuth();
+  const { accentColor, colorScheme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -31,101 +32,90 @@ export default function AdminLoginPage() {
     router.push('/admin/dashboard');
   };
 
+  const themeColors = ThemeColors[colorScheme];
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ 
-      background: `linear-gradient(135deg, ${MetroColors.blue} 0%, ${MetroColors.purple} 50%, ${MetroColors.pink} 100%)` 
-    }}>
+    <div className="flex min-h-screen flex-col items-center justify-center p-6" style={{ backgroundColor: themeColors.background }}>
       <div className="w-full max-w-md">
-        {/* Card de Login */}
-        <div className="bg-white rounded-sm shadow-lg p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div 
-              className="w-20 h-20 rounded-sm mx-auto mb-4 flex items-center justify-center"
-              style={{ backgroundColor: MetroColors.blue }}
-            >
-              <span className="text-4xl">👨‍🏫</span>
-            </div>
-            <h1 className="font-segoe text-3xl font-light lowercase text-gray-900">
-              área do professor
-            </h1>
-            <p className="font-segoe text-sm text-gray-600 mt-2">
-              gerencie seus alunos e treinos
-            </p>
-          </div>
-
-          {/* Formulário */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
-            <div>
-              <label className="block font-segoe text-sm uppercase tracking-wide text-gray-700 mb-2">
-                📧 EMAIL
-              </label>
-              <MetroInput
-                type="email"
-                value={email}
-                onChange={setEmail}
-                placeholder="seu.email@exemplo.com"
-                disabled={isLoading}
-                accentColor={MetroColors.blue}
-                bgColor="#F5F5F5"
-                textColor="#1A1A1A"
-                fullWidth
-              />
-            </div>
-
-            {/* Senha */}
-            <div>
-              <label className="block font-segoe text-sm uppercase tracking-wide text-gray-700 mb-2">
-                🔒 SENHA
-              </label>
-              <MetroInput
-                type="password"
-                value={password}
-                onChange={setPassword}
-                placeholder="••••••••"
-                disabled={isLoading}
-                accentColor={MetroColors.blue}
-                bgColor="#F5F5F5"
-                textColor="#1A1A1A"
-                fullWidth
-              />
-            </div>
-
-            {/* Mensagem de Erro */}
-            {error && (
-              <div className="bg-red-50 border-2 border-red-500 text-red-700 px-4 py-3 rounded-sm font-segoe text-sm">
-                ⚠️ {error}
-              </div>
-            )}
-
-            {/* Botão de Login */}
-            <MetroButton
-              type="submit"
-              disabled={isLoading}
-              variant="primary"
-              accentColor={MetroColors.blue}
-              fullWidth
-              size="lg"
-            >
-              {isLoading ? '🔄 entrando...' : '🚀 entrar'}
-            </MetroButton>
-          </form>
-
-          {/* Link para Login de Aluno */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-            <p className="font-segoe text-sm text-gray-600">
-              É aluno?{' '}
-              <Link href="/login" className="font-semibold hover:underline" style={{ color: MetroColors.blue }}>
-                Entre aqui
-              </Link>
-            </p>
-          </div>
+        {/* Header - Windows Phone Style */}
+        <div className="mb-12">
+          <h1 className="mb-2 font-segoe text-6xl font-extralight lowercase" style={{ color: themeColors.text }}>
+            professor
+          </h1>
+          <div 
+            className="mt-1 h-1 w-24"
+            style={{ backgroundColor: accentColor }}
+          />
         </div>
 
-        {/* Info */}
-        <div className="mt-6 text-center text-white font-segoe text-sm">
-          <p className="opacity-90">🔒 Acesso restrito a professores</p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="mb-2 block font-segoe text-xs uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+              email
+            </label>
+            <MetroInput
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="seu.email@exemplo.com"
+              disabled={isLoading}
+              accentColor={accentColor}
+              bgColor={themeColors.surface}
+              textColor={themeColors.text}
+              fullWidth
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block font-segoe text-xs uppercase tracking-wider" style={{ color: themeColors.textSecondary }}>
+              senha
+            </label>
+            <MetroInput
+              type="password"
+              value={password}
+              onChange={setPassword}
+              placeholder="••••••••"
+              disabled={isLoading}
+              accentColor={accentColor}
+              bgColor={themeColors.surface}
+              textColor={themeColors.text}
+              fullWidth
+            />
+          </div>
+
+          {error && (
+            <div 
+              className="border-l-4 p-4 font-segoe text-sm lowercase"
+              style={{ 
+                borderColor: '#e74856',
+                backgroundColor: colorScheme === 'dark' ? 'rgba(231, 72, 86, 0.1)' : 'rgba(231, 72, 86, 0.05)',
+                color: '#e74856'
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <MetroButton
+            type="submit"
+            disabled={isLoading || !email || !password}
+            variant="primary"
+            accentColor={accentColor}
+            fullWidth
+            size="lg"
+          >
+            {isLoading ? 'entrando...' : 'entrar'}
+          </MetroButton>
+        </form>
+
+        <div className="mt-8">
+          <a 
+            href="/login"
+            className="font-segoe text-xs uppercase tracking-wider opacity-40 transition-opacity hover:opacity-100"
+            style={{ color: themeColors.textSecondary }}
+          >
+            área do aluno
+          </a>
         </div>
       </div>
     </div>

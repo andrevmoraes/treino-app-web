@@ -7,7 +7,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Treino App',
-  description: 'Sistema de treinos com Metro UI Design System',
+  description: 'Sistema de treinos com Metro UI Design System estilo Windows Phone',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     icon: '/icon.png',
     apple: '/apple-icon.png',
   },
+  // Otimizações PWA
+  applicationName: 'Treino App',
+  keywords: ['treino', 'fitness', 'academia', 'exercícios', 'metro ui', 'windows phone'],
 };
 
 export const viewport: Viewport = {
@@ -28,6 +31,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  viewportFit: 'cover', // iOS safe area (notch)
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#000000' },

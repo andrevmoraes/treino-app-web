@@ -10,12 +10,14 @@ export default function HomePage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
+    // Redirect baseado em autenticação
+    if (user) {
+      router.replace('/home');
     } else {
-      router.push('/home');
+      router.replace('/login');
     }
   }, [user, router]);
 
+  // Renderiza sempre o mesmo conteúdo (evita hydration mismatch)
   return <MetroLoading fullScreen />;
 }
