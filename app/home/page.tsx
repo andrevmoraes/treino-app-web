@@ -53,9 +53,9 @@ export default function HomePage() {
 
   // Controla quando mostrar o título baseado no ciclo
   useEffect(() => {
-    // Mostra título entre 3s e 9s (6 segundos visível)
-    // Esconde título entre 0s e 3s (3 segundos escondido)
-    setShowConfigTitle(configCycle >= 3);
+    // Foto no topo (texto visível) entre 0s e 6s (6 segundos)
+    // Foto cobrindo (texto escondido) entre 6s e 9s (3 segundos)
+    setShowConfigTitle(configCycle < 6);
   }, [configCycle]);
 
   useEffect(() => {
@@ -202,34 +202,32 @@ export default function HomePage() {
             {/* Tile de Configurações 2x2 (medium) - Animada com foto */}
             <Link href="/configuracoes" className="col-span-1">
               {student?.avatar_url ? (
-                // Versão com foto - animada com slide
+                // Versão com foto - texto fixo atrás + foto que sobe/desce
                 <div className="aspect-square w-full overflow-hidden" style={{ backgroundColor: accentColor }}>
                   <div className="relative h-full w-full">
-                    {/* Foto que se move para baixo quando título aparece */}
-                    <img
-                      src={student.avatar_url}
-                      alt="Perfil"
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-in-out"
-                      style={{
-                        transform: showConfigTitle ? 'translateY(50%)' : 'translateY(0)',
-                      }}
-                    />
-                    
-                    {/* Faixa com título que desce de cima (cartão único) */}
-                    <div
-                      className="absolute left-0 right-0 top-0 flex flex-col justify-center px-4 transition-transform duration-700 ease-in-out"
-                      style={{
-                        height: '50%',
-                        backgroundColor: accentColor,
-                        transform: showConfigTitle ? 'translateY(0)' : 'translateY(-100%)',
-                      }}
-                    >
+                    {/* Texto fixo no topo (fica atrás da foto) */}
+                    <div className="absolute left-0 right-0 top-0 flex flex-col justify-start px-4 pt-4">
                       <h2 className="font-segoe text-base font-semibold lowercase text-white sm:text-lg md:text-xl">
                         configurações
                       </h2>
                       <p className="mt-1 font-segoe text-xs text-white opacity-90">
                         tema e preferências
                       </p>
+                    </div>
+                    
+                    {/* Foto que sobe e desce cobrindo/revelando o texto */}
+                    <div
+                      className="absolute left-0 right-0 transition-all duration-700 ease-in-out"
+                      style={{
+                        top: showConfigTitle ? '50%' : 0,
+                        height: '100%',
+                      }}
+                    >
+                      <img
+                        src={student.avatar_url}
+                        alt="Perfil"
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                   </div>
                 </div>

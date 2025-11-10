@@ -29,8 +29,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
+  maximumScale: 1, // Previne zoom automático no iOS
+  userScalable: false, // Desabilita zoom manual (necessário para prevenir zoom em inputs no iOS)
   viewportFit: 'cover', // iOS safe area (notch)
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },

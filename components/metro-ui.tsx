@@ -4,7 +4,7 @@
  */
 
 import { MetroColors } from '@/constants/metro-design-system';
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 // ============================================
 // METRO BUTTON
@@ -189,9 +189,10 @@ interface MetroInputProps {
   bgColor?: string;
   textColor?: string;
   className?: string;
+  autoComplete?: string;
 }
 
-export function MetroInput({
+export const MetroInput = forwardRef<HTMLInputElement, MetroInputProps>(function MetroInput({
   type = 'text',
   value,
   onChange,
@@ -203,19 +204,22 @@ export function MetroInput({
   bgColor = '#FFFFFF',
   textColor = '#1A1A1A',
   className = '',
-}: MetroInputProps) {
+  autoComplete,
+}, ref) {
   const widthStyle = fullWidth ? 'w-full' : '';
 
   return (
     <input
+      ref={ref}
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
+      autoComplete={autoComplete}
       className={`
         h-12 md:h-10 px-4 md:px-3 
-        font-segoe text-base md:text-sm
+        font-segoe
         border-2
         transition-all duration-200
         focus:outline-none
@@ -241,7 +245,7 @@ export function MetroInput({
       }}
     />
   );
-}
+});
 
 // ============================================
 // METRO HEADER

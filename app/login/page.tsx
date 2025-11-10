@@ -15,6 +15,13 @@ export default function LoginPage() {
   const { signInWithPhone } = useAuth();
   const { accentColor, colorScheme } = useTheme();
 
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) return;
@@ -34,17 +41,13 @@ export default function LoginPage() {
     router.push('/home');
   };
 
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 2) return numbers;
-    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-  };
-
   const themeColors = ThemeColors[colorScheme];
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6" style={{ backgroundColor: themeColors.background }}>
+    <div 
+      className="flex h-screen flex-col items-center justify-center overflow-hidden p-6" 
+      style={{ backgroundColor: themeColors.background }}
+    >
       <div className="w-full max-w-md">
         {/* Header - Windows Phone Style */}
         <div className="mb-12">
@@ -71,6 +74,7 @@ export default function LoginPage() {
               accentColor={accentColor}
               bgColor={themeColors.surface}
               textColor={themeColors.text}
+              autoComplete="tel"
               fullWidth
             />
           </div>
